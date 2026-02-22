@@ -1,30 +1,513 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EduWonderLab</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EduWonderLab — Grade 6 Math Games</title>
+<style>
+  :root {
+    --bg: #f7f9fc; --card: #fff; --text: #111827; --muted: #6b7280;
+    --border: #d9dfe8; --accent: #2563eb; --accent2: #111827;
+    --good: #065f46; --warn-bg: #fefce8; --warn-border: #fde68a;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Arial, sans-serif; background: var(--bg); color: var(--text); }
+
+  /* ── HEADER ── */
+  header { background: #fff; border-bottom: 1px solid var(--border); padding: 16px 20px; position: sticky; top: 0; z-index: 10; }
+  .header-inner { max-width: 1160px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon { font-size: 28px; line-height: 1; }
+  .brand-title { font-size: 18px; font-weight: 900; }
+  .brand-sub { font-size: 12px; color: var(--muted); }
+  .header-nav { display: flex; gap: 8px; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border); background: #fff; color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none; }
+  .btn:hover { background: var(--bg); }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover { background: #1d4ed8; }
+
+  /* ── HERO ── */
+  .hero { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #7c3aed 100%); color: #fff; padding: 48px 20px 40px; text-align: center; }
+  .hero h1 { margin: 0 0 10px; font-size: clamp(24px, 4vw, 38px); font-weight: 900; }
+  .hero p { margin: 0 auto; max-width: 600px; font-size: 15px; opacity: .85; }
+  .hero-pills { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.15); font-size: 12px; font-weight: 700; }
+
+  /* ── FILTERS ── */
+  .filters { max-width: 1160px; margin: 24px auto 0; padding: 0 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .filter-btn { padding: 7px 14px; border-radius: 999px; border: 1px solid var(--border); background: #fff; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--muted); transition: all .15s; }
+  .filter-btn.active, .filter-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .search-wrap { margin-left: auto; }
+  .search { padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; width: 220px; }
+
+  /* ── DOMAIN SECTIONS ── */
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 20px 20px 60px; }
+  .domain-section { margin-bottom: 32px; }
+  .domain-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .domain-icon { font-size: 20px; }
+  .domain-title { font-size: 15px; font-weight: 900; }
+  .domain-count { font-size: 12px; color: var(--muted); }
+
+  /* ── GAME CARDS ── */
+  .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .game-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 8px; transition: box-shadow .15s, transform .15s; }
+  .game-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.08); transform: translateY(-1px); }
+  .game-card.status-built { border-left: 3px solid #2563eb; }
+  .game-card.status-not-built { border-left: 3px solid var(--border); opacity: .75; }
+
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .standard-badge { font-size: 11px; font-weight: 900; color: var(--accent); background: #eff6ff; border: 1px solid #bfdbfe; padding: 3px 8px; border-radius: 6px; white-space: nowrap; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .status-dot.built { background: #22c55e; }
+  .status-dot.not-built { background: #d1d5db; }
+
+  .game-title { font-size: 15px; font-weight: 900; line-height: 1.3; }
+  .game-skill { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+  .card-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+  .meta-chip { font-size: 11px; padding: 3px 8px; border-radius: 6px; background: var(--bg); border: 1px solid var(--border); color: var(--muted); font-weight: 600; }
+  .meta-chip.engine { color: #7c3aed; background: #f5f3ff; border-color: #ddd6fe; }
+  .meta-chip.dok { color: #0369a1; background: #f0f9ff; border-color: #bae6fd; }
+  .meta-chip.wida { color: #065f46; background: #f0fdf4; border-color: #bbf7d0; }
+
+  .card-actions { display: flex; gap: 8px; margin-top: 4px; }
+  .play-btn { flex: 1; padding: 9px 12px; border-radius: 10px; border: none; font-weight: 900; font-size: 13px; cursor: pointer; text-align: center; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+  .play-btn.available { background: var(--accent); color: #fff; }
+  .play-btn.available:hover { background: #1d4ed8; }
+  .play-btn.coming-soon { background: var(--bg); color: var(--muted); border: 1px solid var(--border); cursor: default; }
+
+  .misconceptions { font-size: 11px; color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 5px 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .misconceptions span { white-space: nowrap; }
+
+  /* ── STATS BAR ── */
+  .stats-bar { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 24px; }
+  .stat { text-align: center; }
+  .stat-n { font-size: 22px; font-weight: 900; color: var(--accent); }
+  .stat-label { font-size: 11px; color: var(--muted); font-weight: 600; }
+
+  /* ── HIDDEN ── */
+  .hidden { display: none !important; }
+</style>
 </head>
 <body>
-  <header class="topbar">
+
+<header>
+  <div class="header-inner">
     <div class="brand">
-      <div class="brandtext">
-        <div class="brandtitle">🧮 EduWonderLab</div>
-        <div class="brandsubtitle">AI-powered math practice + teacher dashboard</div>
+      <div class="brand-icon">🧪</div>
+      <div>
+        <div class="brand-title">EduWonderLab</div>
+        <div class="brand-sub">Grade 6 Math • Adaptive • ESOL-Ready</div>
       </div>
     </div>
-    <nav class="topbarnav">
-      <a class="btn btn--ghost" href="student.html">Student Portal</a>
-      <a class="btn" href="teacher.html">Teacher Portal</a>
+    <nav class="header-nav">
+      <a class="btn" href="./student.html">🎒 Student</a>
+      <a class="btn" href="./teacher.html">🧑‍🏫 Teacher</a>
     </nav>
-  </header>
-  <main class="wrap">
-    <section class="card">
-      <h1>Welcome</h1>
-      <p>Students: solve adaptive math problems with AI feedback.</p>
-      <p>Teachers: create assignments, review student work.</p>
-    </section>
-  </main>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Grade 6 Math Games</h1>
+  <p>Adaptive practice engines with writing gates, ESOL supports, and misconception-aware feedback.</p>
+  <div class="hero-pills">
+    <span class="pill">📐 26 Standards</span>
+    <span class="pill">🧩 4 Game Engines</span>
+    <span class="pill">✍️ TWR Writing Gate</span>
+    <span class="pill">🌎 WIDA 1–5</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="stats-bar" id="statsBar">
+    <div class="stat"><div class="stat-n" id="statTotal">26</div><div class="stat-label">Total Games</div></div>
+    <div class="stat"><div class="stat-n" id="statBuilt">0</div><div class="stat-label">Live Now</div></div>
+    <div class="stat"><div class="stat-n" id="statComing">26</div><div class="stat-label">Coming Soon</div></div>
+    <div class="stat"><div class="stat-n">4</div><div class="stat-label">Engines</div></div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All Domains</button>
+    <button class="filter-btn" data-filter="Ratios & Proportions">Ratios</button>
+    <button class="filter-btn" data-filter="Number System">Number System</button>
+    <button class="filter-btn" data-filter="Expressions & Equations">Expressions</button>
+    <button class="filter-btn" data-filter="Geometry">Geometry</button>
+    <button class="filter-btn" data-filter="Statistics & Probability">Stats</button>
+    <div class="search-wrap">
+      <input class="search" id="searchInput" type="search" placeholder="Search games…" />
+    </div>
+  </div>
+
+  <div id="gameContainer"></div>
+</div>
+
+<script>
+const BASE_CONFIG_URL = "https://eduwonderlab.com/configs/";
+
+const GAMES = [
+  // ── Ratios & Proportions ──────────────────────────────────────
+  {
+    standard:"6.RP.A.1", title:"Ratio Mixer Lab",
+    skill:"Understand ratio concepts",
+    domain:"Ratios & Proportions", engine:"E1_SortMatch",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:RatioLanguage","ERR:PartWhole"],
+    configFile:"6.RP.A.1_dragsort.json",
+    engineUrl:"./engines/drag-sort.html",
+    status:"built"
+  },
+  {
+    standard:"6.RP.A.2", title:"Rate City",
+    skill:"Understand unit rates",
+    domain:"Ratios & Proportions", engine:"E3_ScenarioSim",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:UnitRate","ERR:LabelUnits"],
+    configFile:null, engineUrl:null, status:"not-built"
+  },
+  {
+    standard:"6.RP.A.3", title:"Proportion Machine",
+    skill:"Use ratio and rate reasoning",
+    domain:"Ratios & Proportions", engine:"E2_ModelBuilder",
+    dok:"DOK3", wida:"WIDA1-5",
+    misconceptions:["ERR:ScaleFactor","ERR:TablePattern"],
+    configFile:"6_RP_A_3_equationbuilder.json",
+    engineUrl:"./engines/equation-builder.html",
+    status:"built"
+  },
+  // ── Number System ─────────────────────────────────────────────
+  {
+    standard:"6.NS.A.1", title:"Fraction Kitchen",
+    skill:"Compute quotients of fractions",
+    domain:"Number System", engine:"E2_ModelBuilder",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:InvertMultiply","ERR:ModelMismatch"],
+    configFile:"6_NS_A_1_equationbuilder.json",
+    engineUrl:"./engines/equation-builder.html",
+    status:"built"
+  },
+  {
+    standard:"6.NS.B.2", title:"Division Debugger",
+    skill:"Fluently divide multi-digit numbers",
+    domain:"Number System", engine:"E4_ErrorCourt",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:PlaceValueAlign","ERR:PartialQuotients"],
+    configFile:null, engineUrl:null, status:"not-built"
+  },
+  {
+    standard:"6.NS.B.3", title:"Decimal Workshop",
+    skill:"Fluently operate with decimals",
+    domain:"Number System", engine:"E2_ModelBuilder",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:PlaceValue","ERR:DecimalShift"],
+    configFile:"6_NS_B_3_equationbuilder.json",
+    engineUrl:"./engines/equation-builder.html",
+    status:"built"
+  },
+  {
+    standard:"6.NS.B.4", title:"Factor Factory",
+    skill:"Find GCF and LCM",
+    domain:"Number System", engine:"E1_SortMatch",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:FactorVsMultiple","ERR:GCFLCM"],
+    configFile:"6.NS.B.4_dragsort.json",
+    engineUrl:"./engines/drag-sort.html",
+    status:"built"
+  },
+  {
+    standard:"6.NS.C.5", title:"Integer Elevator",
+    skill:"Understand positive and negative numbers",
+    domain:"Number System", engine:"E3_ScenarioSim",
+    dok:"DOK2", wida:"WIDA1-5",
+    misconceptions:["ERR:SignMeaning","ERR:Direction"],
+    configFile:null, engineUrl:null, status:"not-built"
+  },
+  {
+    standard:"6.NS.C.6", title:"Rational Arena",
+    skill:"Rational numbers on a number line",
+    domain:"Number System", engine:"E1_SortMatch",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:Magnitude","ERR:CommonDenom"],
+    configFile:"6.NS.C.6_dragsort.json",
+    engineUrl:"./engines/drag-sort.html",
+    status:"built"
+  },
+  {
+    standard:"6.NS.C.7", title:"Integer Combiner",
+    skill:"Order and compare rational numbers",
+    domain:"Number System", engine:"E2_ModelBuilder",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:AddSubRule","ERR:MultiplySign"],
+    configFile:"6_NS_C_7_equationbuilder.json",
+    engineUrl:"./engines/equation-builder.html",
+    status:"built"
+  },
+  {
+    standard:"6.NS.C.8", title:"Treasure Grid Quest",
+    skill:"Graph in all four quadrants",
+    domain:"Number System", engine:"E2_ModelBuilder",
+    dok:"DOK2", wida:"WIDA1-5",
+    misconceptions:["ERR:OrderedPair","ERR:AxisSwap"],
+    configFile:"6_NS_C_8_equationbuilder.json",
+    engineUrl:"./engines/equation-builder.html",
+    status:"built"
+  },
+  // ── Expressions & Equations ───────────────────────────────────
+  {
+    standard:"6.EE.A.1", title:"Exponent Forge",
+    skill:"Write and evaluate expressions with exponents",
+    domain:"Expressions & Equations", engine:"E2_ModelBuilder",
+    dok:"DOK2", wida:"WIDA1-5",
+    misconceptions:["ERR:ExponentMeaning"],
+    configFile:"6_EE_A_1_equationbuilder.json",
+    engineUrl:"./engines/equation-builder.html",
+    status:"built"
+  },
+  {
+    standard:"6.EE.A.2", title:"Expression Translator",
+    skill:"Write, read, and evaluate algebraic expressions",
+    domain:"Expressions & Equations", engine:"E2_ModelBuilder",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:TranslateWords","ERR:OperationWords"],
+    configFile:"6_EE_A_2_equationbuilder.json",
+    engineUrl:"./engines/equation-builder.html",
+    status:"built"
+  },
+  {
+    standard:"6.EE.B.5", title:"Inequality Truth Lab",
+    skill:"Understand solving equations as reasoning",
+    domain:"Expressions & Equations", engine:"E1_SortMatch",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:IneqSymbol","ERR:Compare"],
+    configFile:"6.EE.B.5_dragsort.json",
+    engineUrl:"./engines/drag-sort.html",
+    status:"built"
+  },
+  {
+    standard:"6.EE.B.6", title:"Variable Mystery",
+    skill:"Use variables to represent numbers",
+    domain:"Expressions & Equations", engine:"E3_ScenarioSim",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:VariableAsLabel","ERR:MissingUnits"],
+    configFile:null, engineUrl:null, status:"not-built"
+  },
+  {
+    standard:"6.EE.B.7", title:"Equation Scale Engine",
+    skill:"Solve real-world one-variable equations",
+    domain:"Expressions & Equations", engine:"E2_ModelBuilder",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:InverseOps","ERR:Balance"],
+    configFile:"6_EE_B_7_equationbuilder.json",
+    engineUrl:"./engines/equation-builder.html",
+    status:"built"
+  },
+  {
+    standard:"6.EE.B.8", title:"Inequality Grapher",
+    skill:"Write and graph inequalities",
+    domain:"Expressions & Equations", engine:"E2_ModelBuilder",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:OpenClosed","ERR:Direction"],
+    configFile:"6_EE_B_8_equationbuilder.json",
+    engineUrl:"./engines/equation-builder.html",
+    status:"built"
+  },
+  {
+    standard:"6.EE.C.9", title:"Model Builder Missions",
+    skill:"Represent dependent/independent quantities",
+    domain:"Expressions & Equations", engine:"E3_ScenarioSim",
+    dok:"DOK3", wida:"WIDA1-5",
+    misconceptions:["ERR:EquationChoice","ERR:VariableDef"],
+    configFile:null, engineUrl:null, status:"not-built"
+  },
+  // ── Geometry ──────────────────────────────────────────────────
+  {
+    standard:"6.G.A.1", title:"Area Architect",
+    skill:"Find area of polygons",
+    domain:"Geometry", engine:"E2_ModelBuilder",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:Decompose","ERR:UnitSquare"],
+    configFile:"6_G_A_1_equationbuilder.json",
+    engineUrl:"./engines/equation-builder.html",
+    status:"built"
+  },
+  {
+    standard:"6.G.A.2", title:"Volume Builder",
+    skill:"Find volume of right rectangular prisms",
+    domain:"Geometry", engine:"E2_ModelBuilder",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:DimMismatch","ERR:Formula"],
+    configFile:"6_G_A_2_equationbuilder.json",
+    engineUrl:"./engines/equation-builder.html",
+    status:"built"
+  },
+  {
+    standard:"6.G.A.3", title:"Net Factory",
+    skill:"Draw polygons and find side lengths",
+    domain:"Geometry", engine:"E2_ModelBuilder",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:CoordDistance","ERR:NetFolding"],
+    configFile:"6_G_A_3_equationbuilder.json",
+    engineUrl:"./engines/equation-builder.html",
+    status:"built"
+  },
+  {
+    standard:"6.G.A.4", title:"Surface Area Studio",
+    skill:"Represent 3D figures using nets",
+    domain:"Geometry", engine:"E3_ScenarioSim",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:NetFace","ERR:SurfaceVsVolume"],
+    configFile:null, engineUrl:null, status:"not-built"
+  },
+  // ── Statistics & Probability ──────────────────────────────────
+  {
+    standard:"6.SP.A.1", title:"Question Sorter",
+    skill:"Recognize statistical questions",
+    domain:"Statistics & Probability", engine:"E1_SortMatch",
+    dok:"DOK1-2", wida:"WIDA1-5",
+    misconceptions:["ERR:StatVsNonStat"],
+    configFile:null, engineUrl:null, status:"not-built"
+  },
+  {
+    standard:"6.SP.A.3", title:"Center & Spread Lab",
+    skill:"Understand measures of center and variability",
+    domain:"Statistics & Probability", engine:"E2_ModelBuilder",
+    dok:"DOK2", wida:"WIDA1-5",
+    misconceptions:["ERR:MeanVsMedian","ERR:Spread"],
+    configFile:null, engineUrl:null, status:"not-built"
+  },
+  {
+    standard:"6.SP.B.4", title:"Distribution Studio",
+    skill:"Display data in plots on a number line",
+    domain:"Statistics & Probability", engine:"E2_ModelBuilder",
+    dok:"DOK2-3", wida:"WIDA1-5",
+    misconceptions:["ERR:ScaleChoice","ERR:OutlierRead"],
+    configFile:"6_SP_B_4_equationbuilder.json",
+    engineUrl:"./engines/equation-builder.html",
+    status:"built"
+  },
+  {
+    standard:"6.SP.B.5", title:"Data Analyst Brief",
+    skill:"Summarize and describe distributions",
+    domain:"Statistics & Probability", engine:"E3_ScenarioSim",
+    dok:"DOK3", wida:"WIDA1-5",
+    misconceptions:["ERR:ShapeDescription","ERR:OutlierEffect"],
+    configFile:null, engineUrl:null, status:"not-built"
+  }
+];
+
+const ENGINE_LABELS = {
+  "E1_SortMatch": "Sort & Match",
+  "E2_ModelBuilder": "Model Builder",
+  "E3_ScenarioSim": "Scenario Sim",
+  "E4_ErrorCourt": "Error Court"
+};
+
+const DOMAIN_ICONS = {
+  "Ratios & Proportions": "⚖️",
+  "Number System": "🔢",
+  "Expressions & Equations": "🔣",
+  "Geometry": "📐",
+  "Statistics & Probability": "📊"
+};
+
+function gameUrl(g) {
+  if (!g.engineUrl || !g.configFile) return null;
+  return `${g.engineUrl}?configUrl=${BASE_CONFIG_URL}${g.configFile}&standard=${g.standard}&wida=3-4`;
+}
+
+function renderCard(g) {
+  const url = gameUrl(g);
+  const isBuilt = g.status === "built";
+  const miscHtml = g.misconceptions.map(m => `<span>${m.replace("ERR:","")} ⚠</span>`).join("");
+
+  return `
+    <div class="game-card status-${g.status.replace(" ","-")}" data-domain="${g.domain}" data-title="${g.title.toLowerCase()} ${g.standard.toLowerCase()} ${g.skill.toLowerCase()}">
+      <div class="card-top">
+        <span class="standard-badge">${g.standard}</span>
+        <div class="status-dot ${isBuilt ? "built" : "not-built"}" title="${isBuilt ? "Live" : "Coming Soon"}"></div>
+      </div>
+      <div class="game-title">${g.title}</div>
+      <div class="game-skill">${g.skill}</div>
+      <div class="card-meta">
+        <span class="meta-chip engine">${ENGINE_LABELS[g.engine] || g.engine}</span>
+        <span class="meta-chip dok">${g.dok}</span>
+        <span class="meta-chip wida">${g.wida}</span>
+      </div>
+      <div class="misconceptions">${miscHtml}</div>
+      <div class="card-actions">
+        ${isBuilt && url
+          ? `<a class="play-btn available" href="${url}" target="_blank">▶ Play Now</a>`
+          : `<span class="play-btn coming-soon">🔧 Coming Soon</span>`
+        }
+      </div>
+    </div>`;
+}
+
+function renderAll(games) {
+  const container = document.getElementById("gameContainer");
+  container.innerHTML = "";
+
+  const byDomain = {};
+  for (const g of games) {
+    if (!byDomain[g.domain]) byDomain[g.domain] = [];
+    byDomain[g.domain].push(g);
+  }
+
+  const domainOrder = ["Ratios & Proportions", "Number System", "Expressions & Equations", "Geometry", "Statistics & Probability"];
+
+  for (const domain of domainOrder) {
+    const list = byDomain[domain];
+    if (!list || !list.length) continue;
+
+    const section = document.createElement("div");
+    section.className = "domain-section";
+    const built = list.filter(g => g.status === "built").length;
+    section.innerHTML = `
+      <div class="domain-header">
+        <span class="domain-icon">${DOMAIN_ICONS[domain] || "📚"}</span>
+        <span class="domain-title">${domain}</span>
+        <span class="domain-count">${built}/${list.length} live</span>
+      </div>
+      <div class="games-grid">${list.map(renderCard).join("")}</div>`;
+    container.appendChild(section);
+  }
+
+  // Update stats
+  const total = games.length;
+  const builtCount = games.filter(g => g.status === "built").length;
+  document.getElementById("statTotal").textContent = total;
+  document.getElementById("statBuilt").textContent = builtCount;
+  document.getElementById("statComing").textContent = total - builtCount;
+}
+
+// ── Filters + Search ──────────────────────────────────────────────
+let activeDomain = "all";
+let searchQuery = "";
+
+function applyFilters() {
+  let list = GAMES;
+  if (activeDomain !== "all") list = list.filter(g => g.domain === activeDomain);
+  if (searchQuery) list = list.filter(g => g.title.toLowerCase().includes(searchQuery) || g.standard.toLowerCase().includes(searchQuery) || g.skill.toLowerCase().includes(searchQuery));
+  renderAll(list);
+}
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeDomain = btn.dataset.filter;
+    applyFilters();
+  });
+});
+
+document.getElementById("searchInput").addEventListener("input", e => {
+  searchQuery = e.target.value.trim().toLowerCase();
+  applyFilters();
+});
+
+// Boot
+renderAll(GAMES);
+</script>
 </body>
 </html>

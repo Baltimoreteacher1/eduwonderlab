@@ -1,0 +1,19 @@
+{
+  "engine": "dragSort",
+  "version": "2.0.0",
+  "standard": "6.RP.A.1",
+  "title": "Ratio Sort",
+  "prompt": "Sort each representation into the correct category.",
+  "widaLevel": "3-4",
+  "zones": [
+    { "id": "ratio", "label": "Ratio", "hint": "a:b format" },
+    { "id": "fraction", "label": "Fraction", "hint": "a/b format" }
+  ],
+  "items": [
+    { "id": "i1", "text": "3:4", "correctZone": "ratio" },
+    { "id": "i2", "text": "5:2", "correctZone": "ratio" },
+    { "id": "i3", "text": "3/4", "correctZone": "fraction" },
+    { "id": "i4", "text": "5/2", "correctZone": "fraction" }
+  ],
+  "mastery": { "requireWritingToFinish": true, "minWritingChars": 30 }
+}

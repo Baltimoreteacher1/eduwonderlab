@@ -8,27 +8,73 @@
 </head>
 <body>
   <header class="hub-header">
-    <div class="hub-title" id="siteTitle">Mr. Neft • CCSS Hub</div>
-    <div class="hub-sub">Search, filter, and launch games/resources.</div>
-
-    <div class="hub-controls">
-      <input id="q" class="hub-input" placeholder="Search (e.g., inequalities, 6.EE, number line)..." />
-      <select id="type" class="hub-input">
-        <option value="">All Types</option>
-        <option value="game">Games</option>
-        <option value="resource">Resources</option>
-      </select>
-      <select id="unit" class="hub-input">
-        <option value="">All Units</option>
-      </select>
-      <select id="ccss" class="hub-input">
-        <option value="">All CCSS</option>
-      </select>
-      <button id="resetBtn" class="hub-btn">Reset</button>
+    <div class="hub-header-inner">
+      <h1 class="hub-title" id="siteTitle">Mr. Neft • CCSS Hub</h1>
+      <p class="hub-sub" id="hubDescription">
+        Search, filter, and launch games/resources.
+      </p>
     </div>
+
+    <!-- Search / filter controls -->
+    <search>
+      <form
+        class="hub-controls"
+        id="filtersForm"
+        aria-labelledby="filtersLegend"
+      >
+        <span id="filtersLegend" class="visually-hidden">
+          Filter games and resources by keyword, type, unit, and CCSS code
+        </span>
+
+        <label class="visually-hidden" for="q">
+          Search games and resources
+        </label>
+        <input
+          id="q"
+          class="hub-input"
+          type="search"
+          name="query"
+          placeholder="Search (e.g., inequalities, 6.EE, number line)…"
+          aria-describedby="hubDescription"
+        />
+
+        <label class="visually-hidden" for="type">
+          Filter by type
+        </label>
+        <select id="type" class="hub-input" name="type">
+          <option value="">All Types</option>
+          <option value="game">Games</option>
+          <option value="resource">Resources</option>
+        </select>
+
+        <label class="visually-hidden" for="unit">
+          Filter by unit
+        </label>
+        <select id="unit" class="hub-input" name="unit">
+          <option value="">All Units</option>
+        </select>
+
+        <label class="visually-hidden" for="ccss">
+          Filter by CCSS standard
+        </label>
+        <select id="ccss" class="hub-input" name="ccss">
+          <option value="">All CCSS</option>
+        </select>
+
+        <button
+          id="resetBtn"
+          class="hub-btn"
+          type="button"
+        >
+          Reset
+        </button>
+      </form>
+    </search>
   </header>
 
-  <main id="app" class="hub-main"></main>
+  <main id="app" class="hub-main" aria-live="polite">
+    <!-- Cards will be rendered here by app.js -->
+  </main>
 
   <script src="/app.js"></script>
 </body>

@@ -1,0 +1,29 @@
+{
+  "siteTitle": "Mr. Neft • CCSS Hub",
+  "items": [
+    {
+      "title": "Equation Builder",
+      "type": "game",
+      "unit": "Unit 8",
+      "ccss": ["6.EE.B.7"],
+      "tags": ["equations", "one-step", "inverse operations"],
+      "url": "/equation-builder.html"
+    },
+    {
+      "title": "Student Portal",
+      "type": "resource",
+      "unit": "All",
+      "ccss": [],
+      "tags": ["student", "hub"],
+      "url": "/student.html"
+    },
+    {
+      "title": "Teacher Portal",
+      "type": "resource",
+      "unit": "All",
+      "ccss": [],
+      "tags": ["teacher", "dashboard"],
+      "url": "/teacher.html"
+    }
+  ]
+}
